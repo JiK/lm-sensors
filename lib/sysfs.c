@@ -719,6 +719,7 @@ static int find_bus_type(const char *dev_path,
 	while (!ret && my_dev_path != NULL) {
 		snprintf(linkpath, NAME_MAX, "%s/subsystem", my_dev_path);
 		sub_len = readlink(linkpath, subsys_path, NAME_MAX - 1);
+		printf("Link path: %s\n", linkpath);
 		if (sub_len < 0 && errno == ENOENT) {
 			/* Fallback to "bus" link for kernels <= 2.6.17 */
 			snprintf(linkpath, NAME_MAX, "%s/bus", my_dev_path);
@@ -735,18 +736,23 @@ static int find_bus_type(const char *dev_path,
 			}
 		} else {
 			subsys_path[sub_len] = '\0';
+			printf("Read link: %s\n", subsys_path);
 			subsys = strrchr(subsys_path, '/') + 1;
 			printf("Subsys: %s\n", subsys);
 		}
 		ret = classify_device(dev_name, subsys, entry);
 		if (!ret) {
+			printf("Failed to find subsys.");
 			snprintf(linkpath, NAME_MAX, "%s/device", my_dev_path);
 			free(my_dev_path);
 			my_dev_path = realpath(linkpath, NULL);
+			printf("Link path: %s\n", linkpath);
+			printf("Real path: %s\n", my_dev_path);
 			if (my_dev_path != NULL)
 				dev_name = strrchr(my_dev_path, '/') + 1;
 			else if (errno == ENOMEM)
 				sensors_fatal_error(__func__, "Out of memory");
+			printf("New dev_name: %s\n", dev_name);
 		}
 	}
 
