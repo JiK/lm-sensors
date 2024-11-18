@@ -180,6 +180,7 @@ static int add_config_from_dir(const char *dir)
    separately, to make it possible to load several configuration files. */
 int sensors_init(FILE *input)
 {
+	printf("sensors_init\n");
 	int res;
 
 	if (!sensors_init_sysfs())

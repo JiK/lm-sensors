@@ -704,6 +704,7 @@ static int find_bus_type(const char *dev_path,
                          const char *dev_name,
                          sensors_chip_features *entry)
 {
+	printf("find_bus_type: %s %s\n", dev_path, dev_name);
 	char linkpath[NAME_MAX];
 	char subsys_path[NAME_MAX], *subsys;
 	int sub_len;
@@ -735,6 +736,7 @@ static int find_bus_type(const char *dev_path,
 		} else {
 			subsys_path[sub_len] = '\0';
 			subsys = strrchr(subsys_path, '/') + 1;
+			printf("Subsys: %s\n", subsys);
 		}
 		ret = classify_device(dev_name, subsys, entry);
 		if (!ret) {
@@ -758,6 +760,7 @@ static int sensors_read_one_sysfs_chip(const char *dev_path,
 				       const char *dev_name,
 				       const char *hwmon_path)
 {
+	printf("sensors_read_one_sysfs_chip: %s %s %s\n", dev_path, dev_name, hwmon_path);
 	int ret = 1;
 	int virtual = 0;
 	sensors_chip_features entry;
@@ -832,6 +835,7 @@ static int sensors_read_sysfs_chips_compat(void)
 
 static int sensors_add_hwmon_device(const char *path, const char *classdev)
 {
+	printf("sensors_add_hwmon_device: %s %s\n", path, classdev);
 	char linkpath[NAME_MAX];
 	char *dev_path, *dev_name;
 	int err = 0;
@@ -839,6 +843,8 @@ static int sensors_add_hwmon_device(const char *path, const char *classdev)
 
 	snprintf(linkpath, NAME_MAX, "%s/device", path);
 	dev_path = realpath(linkpath, NULL);
+	printf("Link path: %s\n", linkpath);
+	printf("Real path: %s\n", dev_path);
 	if (dev_path == NULL) {
 		if (errno == ENOMEM) {
 			sensors_fatal_error(__func__, "Out of memory");
@@ -865,6 +871,7 @@ static int sensors_add_hwmon_device(const char *path, const char *classdev)
 /* returns 0 if successful, !0 otherwise */
 int sensors_read_sysfs_chips(void)
 {
+	printf("sensors_read_sysfs_chips\n");
 	int ret;
 
 	ret = sysfs_foreach_classdev("hwmon", sensors_add_hwmon_device);
